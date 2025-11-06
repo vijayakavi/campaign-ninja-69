@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,8 +17,17 @@ const CreateCampaign = () => {
     toolId: '',
     campaignName: '',
     campaignDescription: '',
+    vernacularName: {
+      en: '', hi: '', kn: '', ml: '', ta: '', te: '', mr: '', gu: '', bn: '', or: ''
+    },
+    vernacularDescription: {
+      en: '', hi: '', kn: '', ml: '', ta: '', te: '', mr: '', gu: '', bn: '', or: ''
+    },
+    rewardType: '',
+    campaignDesign: '',
     segment: '',
     bucketGroup: '',
+    maxCustomerCount: '',
   });
 
   const steps = [
@@ -41,6 +51,26 @@ const CreateCampaign = () => {
   const handleInputChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
   };
+
+  const handleVernacularChange = (field: 'vernacularName' | 'vernacularDescription', lang: string, value: string) => {
+    setFormData({
+      ...formData,
+      [field]: { ...formData[field], [lang]: value }
+    });
+  };
+
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'hi', name: 'Hindi' },
+    { code: 'kn', name: 'Kannada' },
+    { code: 'ml', name: 'Malayalam' },
+    { code: 'ta', name: 'Tamil' },
+    { code: 'te', name: 'Telugu' },
+    { code: 'mr', name: 'Marathi' },
+    { code: 'gu', name: 'Gujarati' },
+    { code: 'bn', name: 'Bengali' },
+    { code: 'or', name: 'Odia' },
+  ];
 
   return (
     <div className="max-w-5xl">
@@ -157,6 +187,89 @@ const CreateCampaign = () => {
                   rows={4}
                 />
               </div>
+
+              <div className="space-y-2">
+                <Label>Vernacular Name</Label>
+                <Tabs defaultValue="en" className="w-full">
+                  <TabsList className="grid grid-cols-5 lg:grid-cols-10">
+                    {languages.map((lang) => (
+                      <TabsTrigger key={lang.code} value={lang.code} className="text-xs">
+                        {lang.name}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {languages.map((lang) => (
+                    <TabsContent key={lang.code} value={lang.code}>
+                      <Input
+                        value={formData.vernacularName[lang.code as keyof typeof formData.vernacularName]}
+                        onChange={(e) => handleVernacularChange('vernacularName', lang.code, e.target.value)}
+                        placeholder={`Enter campaign name in ${lang.name}`}
+                      />
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Vernacular Description</Label>
+                <Tabs defaultValue="en" className="w-full">
+                  <TabsList className="grid grid-cols-5 lg:grid-cols-10">
+                    {languages.map((lang) => (
+                      <TabsTrigger key={lang.code} value={lang.code} className="text-xs">
+                        {lang.name}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {languages.map((lang) => (
+                    <TabsContent key={lang.code} value={lang.code}>
+                      <Textarea
+                        value={formData.vernacularDescription[lang.code as keyof typeof formData.vernacularDescription]}
+                        onChange={(e) => handleVernacularChange('vernacularDescription', lang.code, e.target.value)}
+                        placeholder={`Enter campaign description in ${lang.name}`}
+                        rows={4}
+                      />
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="rewardType">Reward Type</Label>
+                  <Select
+                    value={formData.rewardType}
+                    onValueChange={(value) => handleInputChange('rewardType', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select reward type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cashback">Cashback</SelectItem>
+                      <SelectItem value="voucher">Voucher</SelectItem>
+                      <SelectItem value="points">Points</SelectItem>
+                      <SelectItem value="discount">Discount</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="campaignDesign">Campaign Design</Label>
+                  <Select
+                    value={formData.campaignDesign}
+                    onValueChange={(value) => handleInputChange('campaignDesign', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select campaign design" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="template-1">Template 1</SelectItem>
+                      <SelectItem value="template-2">Template 2</SelectItem>
+                      <SelectItem value="template-3">Template 3</SelectItem>
+                      <SelectItem value="custom">Custom</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -185,20 +298,24 @@ const CreateCampaign = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="bucketGroup">Bucket Group</Label>
-                  <Select
+                  <Input
+                    id="bucketGroup"
                     value={formData.bucketGroup}
-                    onValueChange={(value) => handleInputChange('bucketGroup', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select bucket group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="group-a">Group A</SelectItem>
-                      <SelectItem value="group-b">Group B</SelectItem>
-                      <SelectItem value="group-c">Group C</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    onChange={(e) => handleInputChange('bucketGroup', e.target.value)}
+                    placeholder="Enter bucket group"
+                  />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="maxCustomerCount">Max Customer Count</Label>
+                <Input
+                  id="maxCustomerCount"
+                  type="number"
+                  value={formData.maxCustomerCount}
+                  onChange={(e) => handleInputChange('maxCustomerCount', e.target.value)}
+                  placeholder="Enter maximum customer count"
+                />
               </div>
             </CardContent>
           </Card>

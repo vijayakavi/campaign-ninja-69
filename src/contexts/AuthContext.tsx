@@ -22,8 +22,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // Dummy authentication - accept any non-empty credentials
-    if (username && password) {
+    // Dummy authentication - admin/admin
+    if (username === 'admin' && password === 'admin') {
       const userData = { username };
       setUser(userData);
       setIsAuthenticated(true);
